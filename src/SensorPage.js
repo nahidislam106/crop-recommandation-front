@@ -1,16 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 
 function SensorPage() {
+  const [data, setData] = useState("");
+
+  useEffect(() => {
+    fetch("http://192.168.251.84") // ESP8266 server
+      .then((res) => res.text())
+      .then((txt) => setData(txt))
+      .catch((err) => console.error("Error:", err));
+  }, []);
+
   return (
     <div className="container">
       <h1>📡 সেন্সর ডাটা</h1>
-      <iframe
-        title="Sensor Data"
-        src="http://192.168.251.84"  // replace with your sensor web server
-        width="100%"
-        height="600px"
-        style={{ border: "2px solid #ccc", borderRadius: "8px" }}
+      <div
+        style={{
+          border: "2px solid #ccc",
+          borderRadius: "8px",
+          padding: "10px",
+          height: "600px",
+          overflow: "auto",
+        }}
+        dangerouslySetInnerHTML={{ __html: data }}
       />
     </div>
   );
