@@ -1,9 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import MainPage from "./MainPage";
-import SensorPage from "./SensorPage";
-import LoginPage from "./LoginPage";
-import SignupPage from "./Signup";
+import Login from "./LoginPage";
+import Signup from "./Signup";
 import Profile from "./Profile";
 import ProtectedRoute from "./ProtectedRoute";
 import { auth } from "./firebase";
@@ -18,13 +17,13 @@ function App() {
 
   const handleLogout = async () => {
     await auth.signOut();
+    window.location.href = "/login"; // redirect to login after logout
   };
 
   return (
     <Router>
       <div className="navbar">
         <Link to="/">🌾 ফসল সুপারিশ</Link>
-        <Link to="/sensor">📡 সেন্সর ডাটা</Link>
 
         {user ? (
           <>
@@ -42,10 +41,16 @@ function App() {
       </div>
 
       <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/sensor" element={<SensorPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MainPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route
           path="/profile"
           element={
