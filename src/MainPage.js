@@ -25,7 +25,8 @@ import Cotton from "./cropImages/cotton.jpg";
 import Jute from "./cropImages/jute.jpg";
 import Coffee from "./cropImages/coffee.jpg";
 
-// Crop mapping with Bengali names and images
+import { auth } from "./firebase";
+
 const cropMap = {
   Rice: { name: "চাল", img: Rice },
   Maize: { name: "ভুট্টা", img: Maize },
@@ -51,7 +52,6 @@ const cropMap = {
   Coffee: { name: "কফি", img: Coffee },
 };
 
-// Bangla labels for inputs
 const banglaLabels = {
   N: "নাইট্রোজেন (N)",
   P: "ফসফরাস (P)",
@@ -69,7 +69,7 @@ function MainPage() {
   const [recommendations, setRecommendations] = useState([]);
 
   const handleChange = (e) => {
-    setFormData({...formData, [e.target.name]: e.target.value});
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -88,40 +88,71 @@ function MainPage() {
     }
   };
 
+  const handleSavePrediction = () => {
+  if (!auth.currentUser) {
+    alert("Login করুন প্রথমে!");
+    return;
+  }
+
+  const land = prompt("ফসলের জমির ঠিকানা লিখুন:");
+  if (!land) return;
+
+  const user = auth.currentUser;
+  const date = new Date().toLocaleDateString();
+  const predictionString = recommendations
+    .map(r => `${r.crop} (${Math.round(r.probability * 100)}%)`)
+    .join(", ");
+
+  const newEntry = { date, prediction: predictionString };
+
+  const savedPredictions = JSON.parse(localStorage.getItem(`predictions_${user.uid}`)) || {};
+  if (!savedPredictions[land]) savedPredictions[land] = [];
+  savedPredictions[land].push(newEntry);
+
+  localStorage.setItem(`predictions_${user.uid}`, JSON.stringify(savedPredictions));
+  alert("Prediction saved successfully!");
+};
+
   return (
     <div className="container">
       <h1>🌾 ফসল সুপারিশ ব্যবস্থা</h1>
-      <div className="main-content">
-        <form className="input-section" onSubmit={handleSubmit}>
-          {Object.keys(formData).map((key) => (
-            <div className="input-group" key={key}>
-              <label>{banglaLabels[key]}</label>
-              <input
-                type="number"
-                name={key}
-                value={formData[key]}
-                onChange={handleChange}
-                step="any"
-                required
-              />
-            </div>
-          ))}
-          <button type="submit">সুপারিশ দেখুন</button>
-        </form>
 
-        <div className="results">
-          <h2>✅ সুপারিশকৃত ফসলসমূহ:</h2>
-          <div className="crop-grid">
-            {recommendations.map((item, index) => (
-              <div className="card" key={index}>
-                <h3>{index + 1}. {cropMap[item.crop]?.name || item.crop}</h3>
-                {cropMap[item.crop] && <img src={cropMap[item.crop].img} alt={item.crop} />}
-                <p>সঠিকতার সম্ভাবনা: {Math.round(item.probability * 100)}%</p>
-              </div>
-            ))}
+      <form className="input-section" onSubmit={handleSubmit}>
+        {Object.keys(formData).map((key) => (
+          <div className="input-group" key={key}>
+            <label>{banglaLabels[key]}</label>
+            <input
+              type="number"
+              name={key}
+              value={formData[key]}
+              onChange={handleChange}
+              step="any"
+              required
+            />
           </div>
-        </div>
-      </div>
+        ))}
+        <button type="submit">সুপারিশ দেখুন</button>
+      </form>
+
+      {recommendations.length > 0 && (
+        <>
+          <button onClick={handleSavePrediction} style={{ marginTop: "10px" }}>
+            💾 Save Prediction
+          </button>
+          <div className="results">
+            <h2>✅ সুপারিশকৃত ফসলসমূহ:</h2>
+            <div className="crop-grid">
+              {recommendations.map((item, index) => (
+                <div className="card" key={index}>
+                  <h3>{index + 1}. {cropMap[item.crop]?.name || item.crop}</h3>
+                  {cropMap[item.crop] && <img src={cropMap[item.crop].img} alt={item.crop} />}
+                  <p>সঠিকতার সম্ভাবনা: {Math.round(item.probability * 100)}%</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+/* General styles */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f7f6;
@@ -5,31 +6,56 @@ body {
   padding: 0;
 }
 
+/* Navbar */
 .navbar {
   display: flex;
-  background-color: #2a9d8f;
-  padding: 15px;
+  gap: 1rem;
+  align-items: center;
+  background: #2f80ed;
+  padding: 1rem;
 }
 
 .navbar a {
   color: white;
   text-decoration: none;
-  margin-right: 20px;
   font-weight: bold;
-  font-size: 16px;
 }
 
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+/* Logout button */
+.logout-btn {
+  background: #ff4b5c;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* Container */
 .container {
   max-width: 1200px;
   margin: 20px auto;
   padding: 10px;
 }
 
-h1 {
-  text-align: center;
+/* Headings */
+h1, h2, h3 {
   color: #264653;
+  text-align: center;
 }
 
+/* Input section */
 .input-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -53,6 +79,7 @@ h1 {
   border: 1px solid #ccc;
 }
 
+/* Buttons */
 button {
   grid-column: 1/-1;
   padding: 10px;
@@ -68,6 +95,7 @@ button:hover {
   background-color: #21867a;
 }
 
+/* Results / Crop cards */
 .results {
   margin-top: 20px;
 }
@@ -91,4 +119,31 @@ button:hover {
   height: 120px;
   object-fit: cover;
   border-radius: 5px;
+}
+
+/* Login/Signup small box */
+.auth-container {
+  max-width: 350px;
+  margin: 5rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.auth-container button {
+  width: 100%;
 }
