@@ -1,5 +1,6 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { Container, Navbar, Nav, NavDropdown, Button } from "react-bootstrap";
 import MainPage from "./MainPage";
 import Login from "./LoginPage";
 import Signup from "./Signup";
@@ -7,8 +8,9 @@ import Profile from "./Profile";
 import ProtectedRoute from "./ProtectedRoute";
 import { auth } from "./firebase";
 
-function App() {
+function AppContent() {
   const [user, setUser] = React.useState(null);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((u) => setUser(u));
@@ -17,49 +19,95 @@ function App() {
 
   const handleLogout = async () => {
     await auth.signOut();
-    window.location.href = "/login"; // redirect to login after logout
+    navigate("/login");
+  };
+
+  const openRealtimeDashboard = () => {
+    window.open("http://192.168.36.136/", "_blank");
   };
 
   return (
+    <>
+      <Navbar bg="success" variant="dark" expand="lg" className="shadow">
+        <Container>
+          <Navbar.Brand as={Link} to="/" className="fw-bold">
+            🌾 ফসল সুপারিশ
+          </Navbar.Brand>
+          
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto">
+              <Nav.Link 
+                onClick={openRealtimeDashboard}
+                className="text-white"
+                style={{ cursor: 'pointer' }}
+              >
+                📡 রিয়েল-টাইম ড্যাশবোর্ড
+              </Nav.Link>
+              {user ? (
+                <NavDropdown
+                  title={
+                    <span className="text-white">
+                      👤 {user.email?.split('@')[0]}
+                    </span>
+                  }
+                  id="account-dropdown"
+                  align="end"
+                >
+                  <NavDropdown.Item as={Link} to="/profile">
+                    👤 প্রোফাইল
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={handleLogout} className="text-danger">
+                    🚪 লগআউট
+                  </NavDropdown.Item>
+                </NavDropdown>
+              ) : (
+                <>
+                  <Nav.Link as={Link} to="/login" className="text-white">
+                    🔑 লগইন
+                  </Nav.Link>
+                  <Nav.Link as={Link} to="/signup" className="text-white">
+                    📝 সাইনআপ
+                  </Nav.Link>
+                </>
+              )}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+
+      <Container fluid className="py-4">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <MainPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Container>
+    </>
+  );
+}
+
+function App() {
+  return (
     <Router>
-      <div className="navbar">
-        <Link to="/">🌾 ফসল সুপারিশ</Link>
-
-        {user ? (
-          <>
-            <Link to="/profile">👤 Profile</Link>
-            <button className="logout-btn" onClick={handleLogout}>
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login">🔑 Login</Link>
-            <Link to="/signup">📝 Signup</Link>
-          </>
-        )}
-      </div>
-
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <MainPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+      <AppContent />
     </Router>
   );
 }
