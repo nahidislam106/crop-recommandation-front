@@ -107,7 +107,7 @@ function RealTimeDashboard() {
       temperature: sensorData.temperature || 0,
       humidity: sensorData.humidity || 0,
       pH: sensorData.ph || 0,
-      EC: sensorData.conductivity || 0
+      EC: sensorData.conductivity ? (sensorData.conductivity / 100) : 0
     };
 
     // Store sensor data for crop recommendation
