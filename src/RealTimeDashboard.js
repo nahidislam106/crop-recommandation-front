@@ -227,9 +227,9 @@ Conductivity: ${sensorData.conductivity || 0} µS/cm`;
                         const value = sensorData[key];
                         const color = getValueColor(key, value);
                         
-                        // Convert conductivity from µS/cm to µS/mm (divide by 10)
+                        // Convert conductivity from µS/cm to µS/mm (divide by 100)
                         const displayValue = key === 'conductivity' && value !== null && value !== undefined
-                          ? (value / 10).toFixed(2)
+                          ? (value / 100).toFixed(3)
                           : value !== null && value !== undefined ? value.toFixed(2) : 'N/A';
                         
                         return (
@@ -329,7 +329,7 @@ Conductivity: ${sensorData.conductivity || 0} µS/cm`;
                                 <td className="fw-bold">{reading.ph?.toFixed(2) || 'N/A'}</td>
                                 <td className="fw-bold">
                                   {reading.conductivity 
-                                    ? (reading.conductivity / 10).toFixed(2) 
+                                    ? (reading.conductivity / 100).toFixed(3) 
                                     : 'N/A'}
                                 </td>
                                 <td style={{ fontSize: '0.85rem' }}>
