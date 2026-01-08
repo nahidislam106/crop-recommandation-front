@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Form, Button, Alert, Spinner, Badge } from "react-bootstrap";
+import { Container, Row, Col, Card, Form, Button, Alert, Spinner, Badge, Modal } from "react-bootstrap";
 import { auth } from "./firebase";
 import { useLocation } from "react-router-dom";
 
@@ -71,6 +71,13 @@ function MainPage() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isFromSensor, setIsFromSensor] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [landDetails, setLandDetails] = useState({
+    landName: "",
+    village: "",
+    district: "",
+    details: ""
+  });
   const location = useLocation();
 
   // Check if coming from sensor page
@@ -140,25 +147,49 @@ function MainPage() {
       setShowAlert(true);
       return;
     }
+    
+    // Show modal for land details
+    setShowSaveModal(true);
+  };
 
-    const land = prompt("ফসলের জমির ঠিকানা লিখুন:");
-    if (!land) return;
+  const handleSaveConfirm = () => {
+    if (!landDetails.landName || !landDetails.village || !landDetails.district) {
+      setAlertMessage("জমির নাম, গ্রাম এবং জেলা অবশ্যই দিতে হবে!");
+      setShowAlert(true);
+      return;
+    }
 
     const user = auth.currentUser;
-    const date = new Date().toLocaleDateString();
+    const date = new Date().toLocaleDateString('bn-BD');
     const predictionString = recommendations
       .map(r => `${r.crop} (${Math.round(r.probability * 100)}%)`)
       .join(", ");
 
-    const newEntry = { date, prediction: predictionString };
+    const newEntry = { 
+      date, 
+      prediction: predictionString,
+      landDetails: { ...landDetails },
+      sensorData: { ...formData }
+    };
 
+    const landKey = `${landDetails.landName} - ${landDetails.village}, ${landDetails.district}`;
     const savedPredictions = JSON.parse(localStorage.getItem(`predictions_${user.uid}`)) || {};
-    if (!savedPredictions[land]) savedPredictions[land] = [];
-    savedPredictions[land].push(newEntry);
+    if (!savedPredictions[landKey]) savedPredictions[landKey] = [];
+    savedPredictions[landKey].push(newEntry);
 
     localStorage.setItem(`predictions_${user.uid}`, JSON.stringify(savedPredictions));
-    setAlertMessage("Prediction সফলভাবে সংরক্ষিত হয়েছে!");
+    
+    setAlertMessage("✅ ফসলের তথ্য সফলভাবে সংরক্ষিত হয়েছে!");
     setShowAlert(true);
+    setShowSaveModal(false);
+    
+    // Reset land details
+    setLandDetails({
+      landName: "",
+      village: "",
+      district: "",
+      details: ""
+    });
   };
 
   return (
@@ -231,7 +262,22 @@ function MainPage() {
                   ))}
                 </Row>
                 
-                <Row className="mt-5">
+                {/* Helpful Tips for Farmers */}
+                <Alert variant="success" className="mt-4" style={{ borderRadius: '15px', border: '2px solid #38ef7d' }}>
+                  <div className="d-flex align-items-start gap-3">
+                    <span style={{ fontSize: '2rem' }}>💡</span>
+                    <div>
+                      <h6 className="fw-bold mb-2">কৃষকদের জন্য টিপস:</h6>
+                      <ul className="mb-0" style={{ fontSize: '0.95rem' }}>
+                        <li><strong>সেন্সর ব্যবহার করুন:</strong> সঠিক মাটির তথ্যের জন্য NPK সেন্সর ব্যবহার করুন</li>
+                        <li><strong>নিয়মিত পরীক্ষা:</strong> প্রতি মৌসুমে মাটি পরীক্ষা করুন</li>
+                        <li><strong>তথ্য সংরক্ষণ:</strong> ফলাফল সংরক্ষণ করে পরবর্তীতে তুলনা করুন</li>
+                      </ul>
+                    </div>
+                  </div>
+                </Alert>
+                
+                <Row className="mt-4">
                   <Col className="text-center">
                     <Button 
                       type="submit" 
@@ -257,10 +303,10 @@ function MainPage() {
                             aria-hidden="true"
                             className="me-2"
                           />
-                          সুপারিশ করছি...
+                          বিশ্লেষণ করা হচ্ছে...
                         </>
                       ) : (
-                        <>🔍 সুপারিশ দেখুন</>
+                        <>🌾 উপযুক্ত ফসল খুঁজুন</>
                       )}
                     </Button>
                   </Col>
@@ -282,7 +328,7 @@ function MainPage() {
                           boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
                         }}
                       >
-                        💾 Prediction সংরক্ষণ করুন
+                        💾 তথ্য সংরক্ষণ করুন
                       </Button>
                     </Col>
                   </Row>
@@ -295,8 +341,9 @@ function MainPage() {
                       backgroundClip: 'text',
                       fontSize: '2rem'
                     }}>
-                      ✅ সুপারিশকৃত ফসলসমূহ
+                      🌱 আপনার জমির জন্য উপযুক্ত ফসল
                     </h2>
+                    <p className="text-muted">মাটির গুণাগুণ অনুযায়ী সবচেয়ে ভালো ফসল</p>
                     <p className="text-muted">আপনার জমির জন্য সবচেয়ে উপযুক্ত ফসল</p>
                   </div>
                   
@@ -381,6 +428,105 @@ function MainPage() {
           </Card>
         </Col>
       </Row>
+
+      {/* Save Prediction Modal */}
+      <Modal show={showSaveModal} onHide={() => setShowSaveModal(false)} centered size="lg">
+        <Modal.Header closeButton style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+          <Modal.Title className="fw-bold">
+            🏞️ জমির বিস্তারিত তথ্য
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-4">
+          <Card className="border-0 bg-light p-4 mb-4">
+            <h5 className="fw-bold mb-3" style={{ color: '#667eea' }}>
+              📍 জমির ঠিকানা
+            </h5>
+            <Row className="g-3">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">জমির নাম/পরিচিতি *</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="যেমন: উত্তরের জমি, পুকুর পাড়ের জমি"
+                    value={landDetails.landName}
+                    onChange={(e) => setLandDetails({...landDetails, landName: e.target.value})}
+                    required
+                    style={{ borderRadius: '10px', padding: '0.75rem' }}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">গ্রাম/এলাকা *</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="গ্রামের নাম"
+                    value={landDetails.village}
+                    onChange={(e) => setLandDetails({...landDetails, village: e.target.value})}
+                    required
+                    style={{ borderRadius: '10px', padding: '0.75rem' }}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">জেলা *</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="জেলার নাম"
+                    value={landDetails.district}
+                    onChange={(e) => setLandDetails({...landDetails, district: e.target.value})}
+                    required
+                    style={{ borderRadius: '10px', padding: '0.75rem' }}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">জমির আকার (ঐচ্ছিক)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="যেমন: ২ বিঘা, ১ একর"
+                    value={landDetails.details}
+                    onChange={(e) => setLandDetails({...landDetails, details: e.target.value})}
+                    style={{ borderRadius: '10px', padding: '0.75rem' }}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Card>
+
+          <Alert variant="info" className="mb-0" style={{ borderRadius: '12px' }}>
+            <div className="d-flex align-items-start gap-2">
+              <span style={{ fontSize: '1.5rem' }}>💡</span>
+              <div>
+                <strong>টিপস:</strong> জমির নাম এমনভাবে দিন যেন পরে চিনতে সুবিধা হয়। যেমন: "বাড়ির পিছনের জমি", "পুকুর পাড়ের জমি" ইত্যাদি।
+              </div>
+            </div>
+          </Alert>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button 
+            variant="secondary" 
+            onClick={() => setShowSaveModal(false)}
+            style={{ borderRadius: '10px', padding: '0.6rem 1.5rem' }}
+          >
+            বাতিল
+          </Button>
+          <Button 
+            variant="success" 
+            onClick={handleSaveConfirm}
+            style={{ 
+              borderRadius: '10px', 
+              padding: '0.6rem 1.5rem',
+              fontWeight: 'bold',
+              boxShadow: '0 4px 15px rgba(17, 153, 142, 0.3)'
+            }}
+          >
+            💾 সংরক্ষণ করুন
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

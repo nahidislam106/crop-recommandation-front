@@ -8,6 +8,14 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState({
+    village: "",
+    postOffice: "",
+    subDistrict: "",
+    district: "",
+    detailedAddress: ""
+  });
   const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -22,10 +30,38 @@ function Signup() {
     });
   }, [navigate]);
 
+  const handleAddressChange = (field, value) => {
+    setAddress(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
     setShowAlert(false);
+
+    // Validate name
+    if (!name.trim()) {
+      setAlertMessage("নাম দিতে হবে!");
+      setAlertVariant("warning");
+      setShowAlert(true);
+      setLoading(false);
+      return;
+    }
+
+    // Validate address - at least one field required
+    const hasAddress = address.village || address.postOffice || address.subDistrict || 
+                      address.district || address.detailedAddress;
+    
+    if (!hasAddress) {
+      setAlertMessage("কমপক্ষে একটি ঠিকানার তথ্য দিন!");
+      setAlertVariant("warning");
+      setShowAlert(true);
+      setLoading(false);
+      return;
+    }
 
     if (password !== confirmPassword) {
       setAlertMessage("পাসওয়ার্ড মিলছে না!");
@@ -44,7 +80,13 @@ function Signup() {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Save profile data to localStorage
+      const profileData = { name, email, address };
+      localStorage.setItem(`profile_${user.uid}`, JSON.stringify(profileData));
+      
       setAlertMessage("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!");
       setAlertVariant("success");
       setShowAlert(true);
@@ -65,7 +107,7 @@ function Signup() {
                   padding: '2rem 1rem'
                 }}>
       <Row className="w-100 justify-content-center">
-        <Col xs={12} sm={10} md={8} lg={5} xl={4}>
+        <Col xs={12} sm={10} md={10} lg={8} xl={7}>
           <Card 
             className="border-0" 
             style={{ 
@@ -81,8 +123,8 @@ function Signup() {
               textAlign: 'center'
             }}>
               <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📝</div>
-              <h1 className="h2 fw-bold text-white mb-2">অ্যাকাউন্ট তৈরি করুন</h1>
-              <p className="text-white-50 mb-0">নতুন যাত্রা শুরু করুন</p>
+              <h1 className="h2 fw-bold text-white mb-2">নতুন অ্যাকাউন্ট তৈরি করুন</h1>
+              <p className="text-white-50 mb-0">কৃষি সহায়ক সিস্টেমে নিবন্ধন করুন</p>
             </div>
 
             <Card.Body className="p-4 p-md-5">
@@ -98,65 +140,193 @@ function Signup() {
               )}
 
               <Form onSubmit={handleSignup}>
-                <Form.Group className="mb-4">
-                  <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-                    <span style={{ fontSize: '1.2rem' }}>📧</span>
-                    ইমেইল ঠিকানা
-                  </Form.Label>
-                  <Form.Control
-                    type="email"
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    style={{
-                      borderRadius: '12px',
-                      padding: '0.875rem 1.25rem',
-                      border: '2px solid #e8ecef',
-                      fontSize: '1rem'
-                    }}
-                  />
-                </Form.Group>
+                {/* Personal Information Section */}
+                <div className="mb-4">
+                  <h5 className="fw-bold mb-3" style={{ color: '#11998e' }}>
+                    👤 ব্যক্তিগত তথ্য
+                  </h5>
+                  
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">পূর্ণ নাম *</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="আপনার নাম"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required
+                          style={{
+                            borderRadius: '12px',
+                            padding: '0.875rem 1.25rem',
+                            border: '2px solid #e8ecef',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">ইমেইল ঠিকানা *</Form.Label>
+                        <Form.Control
+                          type="email"
+                          placeholder="your@email.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          style={{
+                            borderRadius: '12px',
+                            padding: '0.875rem 1.25rem',
+                            border: '2px solid #e8ecef',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                </div>
 
-                <Form.Group className="mb-4">
-                  <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-                    <span style={{ fontSize: '1.2rem' }}>🔒</span>
-                    পাসওয়ার্ড
-                  </Form.Label>
-                  <Form.Control
-                    type="password"
-                    placeholder="কমপক্ষে ৬ অক্ষর"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    style={{
-                      borderRadius: '12px',
-                      padding: '0.875rem 1.25rem',
-                      border: '2px solid #e8ecef',
-                      fontSize: '1rem'
-                    }}
-                  />
-                </Form.Group>
+                {/* Address Section */}
+                <div className="mb-4">
+                  <h5 className="fw-bold mb-3" style={{ color: '#11998e' }}>
+                    🏠 ঠিকানার তথ্য
+                  </h5>
+                  
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">গ্রাম/এলাকা *</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="গ্রামের নাম"
+                          value={address.village}
+                          onChange={(e) => handleAddressChange('village', e.target.value)}
+                          style={{
+                            borderRadius: '12px',
+                            padding: '0.875rem 1.25rem',
+                            border: '2px solid #e8ecef',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">ডাকঘর</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="ডাকঘরের নাম"
+                          value={address.postOffice}
+                          onChange={(e) => handleAddressChange('postOffice', e.target.value)}
+                          style={{
+                            borderRadius: '12px',
+                            padding: '0.875rem 1.25rem',
+                            border: '2px solid #e8ecef',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">উপজেলা</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="উপজেলার নাম"
+                          value={address.subDistrict}
+                          onChange={(e) => handleAddressChange('subDistrict', e.target.value)}
+                          style={{
+                            borderRadius: '12px',
+                            padding: '0.875rem 1.25rem',
+                            border: '2px solid #e8ecef',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">জেলা *</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="জেলার নাম"
+                          value={address.district}
+                          onChange={(e) => handleAddressChange('district', e.target.value)}
+                          style={{
+                            borderRadius: '12px',
+                            padding: '0.875rem 1.25rem',
+                            border: '2px solid #e8ecef',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={12}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">বিস্তারিত ঠিকানা</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={2}
+                          placeholder="রাস্তা, বাড়ির নম্বর, অন্যান্য তথ্য..."
+                          value={address.detailedAddress}
+                          onChange={(e) => handleAddressChange('detailedAddress', e.target.value)}
+                          style={{
+                            borderRadius: '12px',
+                            padding: '0.875rem 1.25rem',
+                            border: '2px solid #e8ecef',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                </div>
 
-                <Form.Group className="mb-4">
-                  <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-                    <span style={{ fontSize: '1.2rem' }}>✅</span>
-                    পাসওয়ার্ড নিশ্চিত করুন
-                  </Form.Label>
-                  <Form.Control
-                    type="password"
-                    placeholder="আবার পাসওয়ার্ড লিখুন"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    style={{
-                      borderRadius: '12px',
-                      padding: '0.875rem 1.25rem',
-                      border: '2px solid #e8ecef',
-                      fontSize: '1rem'
-                    }}
-                  />
-                </Form.Group>
+                {/* Password Section */}
+                <div className="mb-4">
+                  <h5 className="fw-bold mb-3" style={{ color: '#11998e' }}>
+                    🔒 পাসওয়ার্ড
+                  </h5>
+                  
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">পাসওয়ার্ড *</Form.Label>
+                        <Form.Control
+                          type="password"
+                          placeholder="পাসওয়ার্ড লিখুন"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          style={{
+                            borderRadius: '12px',
+                            padding: '0.875rem 1.25rem',
+                            border: '2px solid #e8ecef',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">পাসওয়ার্ড নিশ্চিত করুন *</Form.Label>
+                        <Form.Control
+                          type="password"
+                          placeholder="আবার পাসওয়ার্ড লিখুন"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required
+                          style={{
+                            borderRadius: '12px',
+                            padding: '0.875rem 1.25rem',
+                            border: '2px solid #e8ecef',
+                            fontSize: '1rem'
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                </div>
 
                 <Button 
                   type="submit" 
@@ -173,11 +343,11 @@ function Signup() {
                     boxShadow: '0 8px 25px rgba(17, 153, 142, 0.4)'
                   }}
                 >
-                  {loading ? 'অ্যাকাউন্ট তৈরি হচ্ছে...' : '📝 সাইনআপ'}
+                  {loading ? 'অ্যাকাউন্ট তৈরি হচ্ছে...' : '✅ নিবন্ধন সম্পন্ন করুন'}
                 </Button>
               </Form>
 
-              <div className="text-center">
+              <div className="text-center mt-3">
                 <p className="text-muted mb-0">
                   ইতিমধ্যে অ্যাকাউন্ট আছে?{' '}
                   <Link 
@@ -190,7 +360,7 @@ function Signup() {
                       backgroundClip: 'text'
                     }}
                   >
-                    🔑 লগইন করুন
+                    🔑 প্রবেশ করুন
                   </Link>
                 </p>
               </div>

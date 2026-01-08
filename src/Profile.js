@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Form, Button, Alert, Table, Badge } from "react-bootstrap";
+import { Container, Row, Col, Card, Form, Button, Alert, Badge } from "react-bootstrap";
 import { auth } from "./firebase";
 import { useNavigate } from "react-router-dom";
 import { Document, Packer, Paragraph } from "docx";
@@ -18,6 +18,7 @@ function Profile() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertVariant, setAlertVariant] = useState("success");
+  const [editMode, setEditMode] = useState(false);
   const navigate = useNavigate();
   const user = auth.currentUser;
 
@@ -81,9 +82,10 @@ function Profile() {
     
     const profileData = { name, email, address };
     localStorage.setItem(`profile_${user.uid}`, JSON.stringify(profileData));
-    setAlertMessage("Profile সফলভাবে সংরক্ষিত হয়েছে!");
+    setAlertMessage("✅ তথ্য সফলভাবে আপডেট হয়েছে!");
     setAlertVariant("success");
     setShowAlert(true);
+    setEditMode(false);
   };
 
   const handleAddressChange = (field, value) => {
@@ -200,36 +202,53 @@ function Profile() {
           <Row>
             {/* Profile Section */}
             <Col lg={5} className="mb-4">
-              <Card className="shadow border-0 h-100">
+              <Card className="shadow border-0 h-100" style={{ borderRadius: '15px' }}>
+                <div style={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  padding: '1.5rem',
+                  textAlign: 'center',
+                  borderRadius: '15px 15px 0 0'
+                }}>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h2 className="fw-bold text-white mb-0 flex-grow-1">👤 আমার তথ্য</h2>
+                    <Button
+                      variant="light"
+                      size="sm"
+                      onClick={() => setEditMode(!editMode)}
+                      style={{ borderRadius: '8px', fontWeight: 'bold' }}
+                    >
+                      {editMode ? '❌ বাতিল' : '✏️ সম্পাদনা'}
+                    </Button>
+                  </div>
+                </div>
                 <Card.Body className="p-4">
-                  <Card.Title className="text-center mb-4">
-                    <h2 className="fw-bold text-primary">👤 ব্যক্তিগত তথ্য</h2>
-                  </Card.Title>
+                  {editMode ? (
+                    <Form>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">নাম</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="আপনার পূর্ণ নাম"
+                          style={{ borderRadius: '10px', padding: '0.75rem' }}
+                        />
+                      </Form.Group>
 
-                  <Form>
-                    <Form.Group className="mb-3">
-                      <Form.Label className="fw-semibold">নাম</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="আপনার পূর্ণ নাম"
-                      />
-                    </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold">ইমেইল</Form.Label>
+                        <Form.Control
+                          type="email"
+                          value={email}
+                          disabled
+                          className="bg-light"
+                          style={{ borderRadius: '10px', padding: '0.75rem' }}
+                        />
+                      </Form.Group>
 
-                    <Form.Group className="mb-3">
-                      <Form.Label className="fw-semibold">ইমেইল</Form.Label>
-                      <Form.Control
-                        type="email"
-                        value={email}
-                        disabled
-                        className="bg-light"
-                      />
-                    </Form.Group>
-
-                    {/* Modern Address Section */}
-                    <div className="address-section">
-                      <div className="address-card">
+                      {/* Modern Address Section */}
+                      <div className="address-section">
+                        <div className="address-card">
                         <h4 className="mb-4 text-center" style={{ color: '#2c3e50', fontWeight: 'bold' }}>
                           🏠 ঠিকানার তথ্য
                         </h4>
@@ -310,15 +329,73 @@ function Profile() {
 
                         <div className="address-actions">
                           <Button 
-                            className="modern-btn modern-btn-primary"
+                            className="modern-btn modern-btn-primary w-100"
                             onClick={saveProfile}
+                            style={{
+                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              border: 'none',
+                              borderRadius: '10px',
+                              padding: '0.75rem',
+                              fontWeight: 'bold'
+                            }}
                           >
-                            💾 Profile সংরক্ষণ
+                            💾 তথ্য সংরক্ষণ করুন
                           </Button>
                         </div>
                       </div>
                     </div>
                   </Form>
+                  ) : (
+                    <div>
+                      {/* Display Mode */}
+                      <div className="mb-4">
+                        <h6 className="text-muted mb-2">নাম</h6>
+                        <p className="h5 mb-0">{name || 'নাম দেওয়া হয়নি'}</p>
+                      </div>
+
+                      <div className="mb-4">
+                        <h6 className="text-muted mb-2">ইমেইল</h6>
+                        <p className="h6 mb-0">{email}</p>
+                      </div>
+
+                      <div className="mb-4">
+                        <h6 className="text-muted mb-3">📍 ঠিকানা</h6>
+                        <Card className="bg-light border-0" style={{ borderRadius: '10px' }}>
+                          <Card.Body className="p-3">
+                            {address.village && (
+                              <div className="mb-2">
+                                <span className="fw-semibold">🏘️ গ্রাম:</span> {address.village}
+                              </div>
+                            )}
+                            {address.postOffice && (
+                              <div className="mb-2">
+                                <span className="fw-semibold">📮 ডাকঘর:</span> {address.postOffice}
+                              </div>
+                            )}
+                            {address.subDistrict && (
+                              <div className="mb-2">
+                                <span className="fw-semibold">🏛️ উপজেলা:</span> {address.subDistrict}
+                              </div>
+                            )}
+                            {address.district && (
+                              <div className="mb-2">
+                                <span className="fw-semibold">🏢 জেলা:</span> {address.district}
+                              </div>
+                            )}
+                            {address.detailedAddress && (
+                              <div className="mb-0">
+                                <span className="fw-semibold">📝 বিস্তারিত:</span> {address.detailedAddress}
+                              </div>
+                            )}
+                            {!address.village && !address.postOffice && !address.subDistrict && 
+                             !address.district && !address.detailedAddress && (
+                              <p className="text-muted mb-0">ঠিকানা যোগ করা হয়নি</p>
+                            )}
+                          </Card.Body>
+                        </Card>
+                      </div>
+                    </div>
+                  )}
                 </Card.Body>
               </Card>
             </Col>
@@ -329,13 +406,14 @@ function Profile() {
                 <Card.Body className="p-4">
                   <div className="d-flex justify-content-between align-items-center mb-4">
                     <Card.Title>
-                      <h2 className="fw-bold text-success">📄 Prediction ইতিহাস</h2>
+                      <h2 className="fw-bold text-success">� ফসল সুপারিশের ইতিহাস</h2>
                     </Card.Title>
                     {Object.keys(landPredictions).length > 0 && (
                       <Button 
                         variant="outline-danger" 
                         size="sm"
                         onClick={clearAllPredictions}
+                        style={{ borderRadius: '10px' }}
                       >
                         🗑️ সব মুছুন
                       </Button>
@@ -343,70 +421,100 @@ function Profile() {
                   </div>
 
                   {Object.keys(landPredictions).length === 0 ? (
-                    <div className="text-center py-5">
-                      <h4 className="text-muted">📭 কোনো prediction নেই</h4>
-                      <p className="text-muted">Prediction করলে এখানে দেখা যাবে</p>
-                    </div>
+                    <Card className="border-0 bg-light text-center py-5">
+                      <Card.Body>
+                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📭</div>
+                        <h4 className="text-muted mb-2">কোনো সুপারিশ সংরক্ষিত নেই</h4>
+                        <p className="text-muted">ফসলের সুপারিশ সংরক্ষণ করলে এখানে দেখা যাবে</p>
+                      </Card.Body>
+                    </Card>
                   ) : (
                     <div className="predictions-container">
                       {Object.entries(landPredictions).map(([land, entries]) => (
-                        <div key={land} className="mb-4">
-                          <Card className="border-0 bg-light">
-                            <Card.Header className="bg-primary text-white">
-                              <h5 className="mb-0">
-                                🏞️ জমি: {land}
-                                <Badge bg="light" text="dark" className="ms-2">
-                                  {entries.length}টি
-                                </Badge>
-                              </h5>
-                            </Card.Header>
-                            <Card.Body>
-                              {entries.length > 0 ? (
-                                <Table responsive hover size="sm">
-                                  <thead>
-                                    <tr>
-                                      <th>তারিখ</th>
-                                      <th>Prediction</th>
-                                      <th width="150">অ্যাকশন</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {entries.map((entry, idx) => (
-                                      <tr key={idx}>
-                                        <td>
-                                          <Badge bg="info">{entry.date}</Badge>
-                                        </td>
-                                        <td className="text-truncate" style={{ maxWidth: '200px' }}>
+                        <Card key={land} className="mb-4 border-0 shadow-sm" style={{ borderRadius: '15px', overflow: 'hidden' }}>
+                          <div style={{
+                            background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                            padding: '1.2rem 1.5rem',
+                            color: 'white'
+                          }}>
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div>
+                                <h5 className="mb-1 fw-bold">🏞️ {land.split(' - ')[0]}</h5>
+                                <p className="mb-0 opacity-75" style={{ fontSize: '0.9rem' }}>
+                                  📍 {land.split(' - ')[1] || ''}
+                                </p>
+                              </div>
+                              <Badge bg="light" text="dark" style={{ fontSize: '1rem', padding: '0.5rem 1rem', borderRadius: '10px' }}>
+                                {entries.length} টি রেকর্ড
+                              </Badge>
+                            </div>
+                          </div>
+                          
+                          <Card.Body className="p-3">
+                            {entries.map((entry, idx) => (
+                              <Card key={idx} className="mb-3 border-0 bg-light" style={{ borderRadius: '12px' }}>
+                                <Card.Body className="p-3">
+                                  <Row className="align-items-center">
+                                    <Col md={8}>
+                                      <div className="mb-2">
+                                        <Badge bg="info" className="me-2" style={{ fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}>
+                                          📅 {entry.date}
+                                        </Badge>
+                                      </div>
+                                      
+                                      <div className="mb-2">
+                                        <strong style={{ color: '#11998e' }}>🌾 সুপারিশকৃত ফসল:</strong>
+                                        <p className="mb-0 mt-1" style={{ fontSize: '0.95rem', lineHeight: '1.6' }}>
                                           {entry.prediction}
-                                        </td>
-                                        <td>
-                                          <div className="d-flex gap-1">
-                                            <Button
-                                              variant="outline-primary"
-                                              size="sm"
-                                              onClick={() => savePredictionAsDoc(land, entry.date, entry.prediction)}
-                                            >
-                                              📄
-                                            </Button>
-                                            <Button
-                                              variant="outline-danger"
-                                              size="sm"
-                                              onClick={() => deletePrediction(land, idx)}
-                                            >
-                                              🗑️
-                                            </Button>
+                                        </p>
+                                      </div>
+                                      
+                                      {entry.landDetails && (
+                                        <div className="mt-2 p-2 bg-white rounded" style={{ fontSize: '0.85rem' }}>
+                                          <div className="d-flex flex-wrap gap-2">
+                                            {entry.landDetails.details && (
+                                              <Badge bg="secondary" className="fw-normal">
+                                                📏 {entry.landDetails.details}
+                                              </Badge>
+                                            )}
                                           </div>
-                                        </td>
-                                      </tr>
-                                    ))}
-                                  </tbody>
-                                </Table>
-                              ) : (
-                                <p className="text-muted mb-0">এই জমির জন্য কোনো prediction নেই</p>
-                              )}
-                            </Card.Body>
-                          </Card>
-                        </div>
+                                        </div>
+                                      )}
+                                    </Col>
+                                    
+                                    <Col md={4} className="text-end">
+                                      <div className="d-flex flex-column gap-2">
+                                        <Button
+                                          variant="primary"
+                                          size="sm"
+                                          onClick={() => savePredictionAsDoc(land, entry.date, entry.prediction)}
+                                          style={{ 
+                                            borderRadius: '10px', 
+                                            fontWeight: 'bold',
+                                            padding: '0.5rem 1rem'
+                                          }}
+                                        >
+                                          📄 ডাউনলোড
+                                        </Button>
+                                        <Button
+                                          variant="outline-danger"
+                                          size="sm"
+                                          onClick={() => deletePrediction(land, idx)}
+                                          style={{ 
+                                            borderRadius: '10px',
+                                            padding: '0.5rem 1rem'
+                                          }}
+                                        >
+                                          🗑️ মুছুন
+                                        </Button>
+                                      </div>
+                                    </Col>
+                                  </Row>
+                                </Card.Body>
+                              </Card>
+                            ))}
+                          </Card.Body>
+                        </Card>
                       ))}
                     </div>
                   )}

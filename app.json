@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "00da1f6a-1d3d-473e-9055-84fa2a91e397"
+      }
+    },
+    "android": {
+      "package": "com.nahid22.cropapp"
+    }
+  }
+}
