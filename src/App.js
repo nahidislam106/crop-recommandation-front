@@ -6,6 +6,7 @@ import Login from "./LoginPage";
 import Signup from "./Signup";
 import Profile from "./Profile";
 import RealTimeDashboard from "./RealTimeDashboard";
+import MicroClimateDashboard from "./MicroClimateDashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import { auth } from "./firebase";
 
@@ -25,10 +26,19 @@ function AppContent() {
 
   return (
     <>
-      <Navbar bg="success" variant="dark" expand="lg" className="shadow">
+      <Navbar 
+        variant="dark" 
+        expand="lg" 
+        className="shadow-sm py-2"
+        style={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          minHeight: '60px'
+        }}
+      >
         <Container>
-          <Navbar.Brand as={Link} to="/" className="fw-bold" style={{ fontSize: '1.3rem' }}>
-            🌾 কৃষি সহায়ক
+          <Navbar.Brand as={Link} to="/" className="fw-bold d-flex align-items-center" style={{ fontSize: '1.1rem' }}>
+            <span style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}>🌾</span>
+            কৃষি সহায়ক
           </Navbar.Brand>
           
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -38,14 +48,23 @@ function AppContent() {
               <Nav.Link 
                 as={Link}
                 to="/dashboard"
-                className="text-white fw-semibold"
+                className="text-white fw-semibold px-3"
+                style={{ fontSize: '0.95rem' }}
               >
-                📊 সেন্সর ড্যাশবোর্ড
+                📊 সেন্সর
+              </Nav.Link>
+              <Nav.Link 
+                as={Link}
+                to="/microclimate"
+                className="text-white fw-semibold px-3"
+                style={{ fontSize: '0.95rem' }}
+              >
+                🌦️ আবহাওয়া
               </Nav.Link>
               {user ? (
                 <NavDropdown
                   title={
-                    <span className="text-white fw-semibold">
+                    <span className="text-white fw-semibold" style={{ fontSize: '0.95rem' }}>
                       👤 {user.email?.split('@')[0]}
                     </span>
                   }
@@ -62,10 +81,10 @@ function AppContent() {
                 </NavDropdown>
               ) : (
                 <>
-                  <Nav.Link as={Link} to="/login" className="text-white fw-semibold">
+                  <Nav.Link as={Link} to="/login" className="text-white fw-semibold px-3" style={{ fontSize: '0.95rem' }}>
                     🔑 প্রবেশ
                   </Nav.Link>
-                  <Nav.Link as={Link} to="/signup" className="text-white fw-semibold">
+                  <Nav.Link as={Link} to="/signup" className="text-white fw-semibold px-3" style={{ fontSize: '0.95rem' }}>
                     📝 নিবন্ধন
                   </Nav.Link>
                 </>
@@ -75,7 +94,7 @@ function AppContent() {
         </Container>
       </Navbar>
 
-      <Container fluid className="py-4">
+      <Container fluid className="py-3">
         <Routes>
           <Route
             path="/"
@@ -92,6 +111,14 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <RealTimeDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/microclimate"
+            element={
+              <ProtectedRoute>
+                <MicroClimateDashboard />
               </ProtectedRoute>
             }
           />

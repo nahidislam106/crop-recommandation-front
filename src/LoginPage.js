@@ -56,9 +56,33 @@ function LoginPage() {
               padding: '2.5rem 2rem',
               textAlign: 'center'
             }}>
-              <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔑</div>
-              <h1 className="h2 fw-bold text-white mb-2">লগইন করুন</h1>
-              <p className="text-white-50 mb-0">আপনার অ্যাকাউন্টে প্রবেশ করুন</p>
+              <div style={{ 
+                fontSize: '5rem', 
+                marginBottom: '1rem',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <span>🌾</span>
+                <span>🌡️</span>
+                <span>💧</span>
+              </div>
+              <h1 className="h1 fw-bold text-white mb-3" style={{ 
+                fontSize: '2.2rem',
+                letterSpacing: '1px'
+              }}>
+                কৃষি সহায়ক সিস্টেম
+              </h1>
+              <div className="text-white mb-3" style={{ 
+                fontSize: '1rem',
+                lineHeight: '1.6'
+              }}>
+                <p className="mb-2">✅ ফসল সুপারিশ AI সিস্টেম</p>
+                <p className="mb-2">✅ NPK সেন্সর ড্যাশবোর্ড</p>
+                <p className="mb-2">✅ মাইক্রো-ক্লাইমেট মনিটরিং</p>
+                <p className="mb-0">✅ GPS লোকেশন ট্র্যাকিং</p>
+              </div>
             </div>
 
             <Card.Body className="p-4 p-md-5">
