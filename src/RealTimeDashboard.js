@@ -114,8 +114,8 @@ function RealTimeDashboard() {
     // Store sensor data for crop recommendation
     localStorage.setItem("sensorDataForRecommendation", JSON.stringify(formData));
     
-    // Navigate to main page with sensor data
-    navigate("/?fromSensor=true");
+    // Navigate to recommendation page with sensor data
+    navigate("/recommendation?fromSensor=true");
   };
 
   const copyAverageValues = () => {
