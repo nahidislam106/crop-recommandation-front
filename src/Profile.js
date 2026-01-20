@@ -210,7 +210,10 @@ function Profile() {
                   borderRadius: '15px 15px 0 0'
                 }}>
                   <div className="d-flex justify-content-between align-items-center">
-                    <h2 className="fw-bold text-white mb-0 flex-grow-1">👤 আমার তথ্য</h2>
+                    <h2 className="fw-bold text-dark mb-0 flex-grow-1">
+                      <i className="bi bi-person-circle text-primary me-2"></i>
+                      আমার তথ্য
+                    </h2>
                     <Button
                       variant="light"
                       size="sm"

@@ -216,45 +216,34 @@ function MicroClimateDashboard() {
     return date.toLocaleTimeString('bn-BD', {
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
+      second: '2-digit',
+      timeZone: 'Asia/Dhaka'
     });
   };
 
   return (
-    <Container>
+    <Container className="py-5">
       <Row className="justify-content-center">
-        <Col lg={11} xl={10}>
-          <Card className="shadow-lg border-0" style={{ borderRadius: '25px', overflow: 'hidden' }}>
-            <div style={{
-              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-              padding: '2rem',
-              textAlign: 'center'
-            }}>
-              <h1 className="display-5 fw-bold text-white mb-2" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                🌦️ মাইক্রো-ক্লাইমেট ড্যাশবোর্ড
-              </h1>
+        <Col lg={10} xl={9}>
+          {/* Hero Header */}
+          <div className="text-center mb-5">
+            <h1 className="display-4 fw-bold text-dark mb-3">
+              <span className="text-info me-2">🌦️</span>
+              মাইক্রো-ক্লাইমেট ড্যাশবোর্ড
+            </h1>
+            <p className="lead text-muted mb-4">
+              আবহাওয়ার তথ্য ও GPS লোকেশন মনিটরিং
+            </p>
               
               <div className="d-flex justify-content-center align-items-center gap-3 flex-wrap">
-                {lastUpdate && (
-                  <Badge 
-                    bg="light" 
-                    text="dark"
-                    className="px-3 py-2"
-                    style={{ 
-                      fontSize: '0.9rem',
-                      borderRadius: '12px'
-                    }}
-                  >
-                    🕐 {formatTimestamp(lastUpdate)}
-                  </Badge>
-                )}
                 <Badge 
                   bg="light" 
                   text="dark"
-                  className="px-3 py-2"
+                  className="px-4 py-2 shadow-sm"
                   style={{ 
-                    fontSize: '0.9rem',
-                    borderRadius: '12px'
+                    fontSize: '1rem',
+                    borderRadius: '15px',
+                    fontWeight: '600'
                   }}
                 >
                   {getTimeOfDay()}
@@ -262,10 +251,11 @@ function MicroClimateDashboard() {
                 <Badge 
                   bg="warning" 
                   text="dark"
-                  className="px-3 py-2"
+                  className="px-4 py-2 shadow-sm"
                   style={{ 
-                    fontSize: '0.9rem',
-                    borderRadius: '12px'
+                    fontSize: '1rem',
+                    borderRadius: '15px',
+                    fontWeight: '600'
                   }}
                 >
                   {getWeatherCondition(weatherData)}
@@ -274,10 +264,11 @@ function MicroClimateDashboard() {
                   <Badge 
                     bg="info" 
                     text="white"
-                    className="px-3 py-2"
+                    className="px-4 py-2 shadow-sm"
                     style={{ 
-                      fontSize: '0.9rem',
-                      borderRadius: '12px',
+                      fontSize: '1rem',
+                      borderRadius: '15px',
+                      fontWeight: '600',
                       maxWidth: '300px',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
@@ -288,9 +279,11 @@ function MicroClimateDashboard() {
                   </Badge>
                 )}
               </div>
-            </div>
+          </div>
 
-            <Card.Body className="p-4 p-md-5">
+          {/* Main Card */}
+          <Card className="shadow-sm border-0 rounded-4 mb-4">
+            <Card.Body className="p-4 p-lg-5">
               {loading ? (
                 <div className="text-center py-5">
                   <Spinner animation="border" variant="danger" style={{ width: '3rem', height: '3rem' }} />
@@ -380,9 +373,24 @@ function MicroClimateDashboard() {
                             onClick={getLocation}
                             disabled={locationLoading}
                             style={{
-                              borderRadius: '12px',
+                              borderRadius: '15px',
                               fontWeight: '700',
-                              padding: '0.75rem 1.5rem'
+                              padding: '0.9rem 2rem',
+                              fontSize: '1rem',
+                              boxShadow: '0 8px 20px rgba(23, 162, 184, 0.3)',
+                              transition: 'all 0.3s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!locationLoading) {
+                                e.target.style.transform = 'translateY(-2px)';
+                                e.target.style.boxShadow = '0 12px 30px rgba(23, 162, 184, 0.4)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!locationLoading) {
+                                e.target.style.transform = 'translateY(0)';
+                                e.target.style.boxShadow = '0 8px 20px rgba(23, 162, 184, 0.3)';
+                              }
                             }}
                           >
                             {locationLoading ? (
@@ -425,31 +433,34 @@ function MicroClimateDashboard() {
                           : 'N/A';
                         
                         return (
-                          <Col md={6} lg={4} key={key}>
+                          <Col md={6} lg={3} key={key}>
                             <Card 
-                              className={`border-0 h-100 shadow-sm bg-${color}-subtle`}
+                              className={`border-0 h-100 bg-${color}-subtle`}
                               style={{ 
-                                borderRadius: '15px',
+                                borderRadius: '20px',
                                 transition: 'all 0.3s ease',
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(255, 255, 255, 0.18)'
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-5px)';
-                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(245, 87, 108, 0.3)';
+                                e.currentTarget.style.transform = 'translateY(-8px)';
+                                e.currentTarget.style.boxShadow = '0 12px 40px rgba(245, 87, 108, 0.35)';
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '';
+                                e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
                               }}
                             >
                               <Card.Body className="text-center p-4">
-                                <div style={{ fontSize: '2.5rem' }} className="mb-2">
+                                <div style={{ fontSize: '3rem', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' }} className="mb-3">
                                   {icon}
                                 </div>
-                                <h6 className="text-muted mb-2">{label}</h6>
-                                <h2 className={`fw-bold text-${color} mb-0`}>
+                                <h6 className="text-muted mb-3 fw-semibold" style={{ fontSize: '0.9rem' }}>{label}</h6>
+                                <h2 className={`fw-bold text-${color} mb-0`} style={{ fontSize: '2rem' }}>
                                   {displayValue}
-                                  <small className="fs-6 ms-1">{unit}</small>
+                                  <small className="fs-5 ms-2 text-muted">{unit}</small>
                                 </h2>
                               </Card.Body>
                             </Card>
@@ -467,17 +478,27 @@ function MicroClimateDashboard() {
                         size="lg"
                         onClick={handleRefresh}
                         style={{
-                          borderRadius: '12px',
+                          borderRadius: '15px',
                           fontWeight: '700',
-                          padding: '1rem 2rem',
+                          padding: '1.2rem 2.5rem',
+                          fontSize: '1.1rem',
                           background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
                           border: 'none',
-                          boxShadow: '0 8px 25px rgba(245, 87, 108, 0.3)'
+                          boxShadow: '0 10px 30px rgba(245, 87, 108, 0.4)',
+                          transition: 'all 0.3s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.transform = 'translateY(-3px)';
+                          e.target.style.boxShadow = '0 15px 40px rgba(245, 87, 108, 0.5)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.transform = 'translateY(0)';
+                          e.target.style.boxShadow = '0 10px 30px rgba(245, 87, 108, 0.4)';
                         }}
                       >
                         🔄 ডাটা রিফ্রেশ করুন
                       </Button>
-                      <p className="text-muted mt-3 mb-0" style={{ fontSize: '0.9rem' }}>
+                      <p className="text-muted mt-3 mb-0" style={{ fontSize: '0.95rem', fontWeight: '500' }}>
                         ⚡ স্বয়ংক্রিয় আপডেট প্রতি ১০ সেকেন্ডে
                       </p>
                     </Col>

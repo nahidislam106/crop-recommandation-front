@@ -156,43 +156,29 @@ Conductivity: ${sensorData.conductivity || 0} µS/cm`;
       second: '2-digit',
       day: '2-digit',
       month: 'short',
-      year: 'numeric'
+      year: 'numeric',
+      timeZone: 'Asia/Dhaka'
     });
   };
 
   return (
-    <Container>
+    <Container className="py-5">
       <Row className="justify-content-center">
-        <Col lg={11} xl={10}>
-          <Card className="shadow-lg border-0" style={{ borderRadius: '25px', overflow: 'hidden' }}>
-            <div style={{
-              background: 'linear-gradient(135deg, #00c6ff 0%, #0072ff 100%)',
-              padding: '2rem',
-              textAlign: 'center'
-            }}>
-              <h1 className="display-5 fw-bold text-white mb-2" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                📡 রিয়েল-টাইম NPK সেন্সর ড্যাশবোর্ড
-              </h1>
-              <p className="text-white-50 mb-3">মাটির গুণাগুণ পরিমাপের লাইভ ডাটা</p>
-              
-              <div className="d-flex justify-content-center align-items-center gap-3 flex-wrap">
-                {lastUpdate && (
-                  <Badge 
-                    bg="light" 
-                    text="dark"
-                    className="px-3 py-2"
-                    style={{ 
-                      fontSize: '0.9rem',
-                      borderRadius: '12px'
-                    }}
-                  >
-                    🕐 {lastUpdate.toLocaleTimeString('bn-BD')}
-                  </Badge>
-                )}
-              </div>
-            </div>
+        <Col lg={10} xl={9}>
+          {/* Hero Header */}
+          <div className="text-center mb-5">
+            <h1 className="display-4 fw-bold text-dark mb-3">
+              <span className="text-primary me-2">📡</span>
+              রিয়েল-টাইম NPK সেন্সর
+            </h1>
+            <p className="lead text-muted mb-4">
+              মাটির গুণাগুণ পরিমাপের লাইভ মনিটরিং
+            </p>
+          </div>
 
-            <Card.Body className="p-4 p-md-5">
+          {/* Main Card */}
+          <Card className="shadow-sm border-0 rounded-4 mb-4">
+            <Card.Body className="p-4 p-lg-5">
               {error && (
                 <Alert variant="danger" dismissible onClose={() => setError(null)} className="mb-4">
                   <div className="d-flex align-items-center gap-2">
@@ -211,9 +197,13 @@ Conductivity: ${sensorData.conductivity || 0} µS/cm`;
                 <>
                   {/* Current Sensor Values */}
                   <div className="mb-5">
-                    <h3 className="text-center mb-4 fw-bold" style={{ color: '#0072ff' }}>
-                      🎯 বর্তমান সেন্সর মান
-                    </h3>
+                    <div className="text-center mb-4">
+                      <h3 className="fw-bold text-primary">
+                        <span className="me-2">🎯</span>
+                        বর্তমান সেন্সর মান
+                      </h3>
+                      <p className="text-muted mb-0">লাইভ মনিটরিং ডাটা</p>
+                    </div>
                     <Row className="g-4">
                       {[
                         { key: 'nitrogen', label: banglaLabels.nitrogen, icon: icons.nitrogen, unit: 'mg/kg' },
@@ -235,20 +225,25 @@ Conductivity: ${sensorData.conductivity || 0} µS/cm`;
                         return (
                           <Col md={6} lg={4} key={key}>
                             <Card 
-                              className={`border-0 h-100 shadow-sm bg-${color}-subtle`}
+                              className={`border-0 h-100 bg-${color}-subtle`}
                               style={{ 
-                                borderRadius: '15px',
-                                transition: 'transform 0.2s'
+                                borderRadius: '20px',
+                                transition: 'all 0.3s ease',
+                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(255, 255, 255, 0.18)'
                               }}
+                              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+                              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                             >
                               <Card.Body className="text-center p-4">
-                                <div style={{ fontSize: '2.5rem' }} className="mb-2">
+                                <div style={{ fontSize: '3rem', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' }} className="mb-3">
                                   {icon}
                                 </div>
-                                <h6 className="text-muted mb-2">{label}</h6>
-                                <h2 className={`fw-bold text-${color} mb-0`}>
+                                <h6 className="text-muted mb-3 fw-semibold" style={{ fontSize: '0.9rem' }}>{label}</h6>
+                                <h2 className={`fw-bold text-${color} mb-0`} style={{ fontSize: '2rem' }}>
                                   {displayValue}
-                                  <small className="fs-6 ms-1">{unit}</small>
+                                  <small className="fs-5 ms-2 text-muted">{unit}</small>
                                 </h2>
                               </Card.Body>
                             </Card>
@@ -267,10 +262,22 @@ Conductivity: ${sensorData.conductivity || 0} µS/cm`;
                           size="lg"
                           onClick={handleUseForRecommendation}
                           style={{
-                            borderRadius: '12px',
+                            borderRadius: '15px',
                             fontWeight: '700',
-                            padding: '1rem 2rem',
-                            boxShadow: '0 8px 25px rgba(17, 153, 142, 0.3)'
+                            padding: '1.2rem 2.5rem',
+                            fontSize: '1.1rem',
+                            boxShadow: '0 10px 30px rgba(17, 153, 142, 0.4)',
+                            border: 'none',
+                            background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                            transition: 'all 0.3s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = 'translateY(-3px)';
+                            e.target.style.boxShadow = '0 15px 40px rgba(17, 153, 142, 0.5)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = 'translateY(0)';
+                            e.target.style.boxShadow = '0 10px 30px rgba(17, 153, 142, 0.4)';
                           }}
                         >
                           🌾 ফসল সুপারিশের জন্য ব্যবহার করুন
@@ -280,10 +287,22 @@ Conductivity: ${sensorData.conductivity || 0} µS/cm`;
                           size="lg"
                           onClick={copyAverageValues}
                           style={{
-                            borderRadius: '12px',
+                            borderRadius: '15px',
                             fontWeight: '700',
-                            padding: '1rem 2rem',
-                            boxShadow: '0 8px 25px rgba(0, 114, 255, 0.3)'
+                            padding: '1.2rem 2.5rem',
+                            fontSize: '1.1rem',
+                            boxShadow: '0 10px 30px rgba(0, 114, 255, 0.4)',
+                            border: 'none',
+                            background: 'linear-gradient(135deg, #00c6ff 0%, #0072ff 100%)',
+                            transition: 'all 0.3s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = 'translateY(-3px)';
+                            e.target.style.boxShadow = '0 15px 40px rgba(0, 114, 255, 0.5)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = 'translateY(0)';
+                            e.target.style.boxShadow = '0 10px 30px rgba(0, 114, 255, 0.4)';
                           }}
                         >
                           📋 মানগুলো কপি করুন
@@ -353,15 +372,37 @@ Conductivity: ${sensorData.conductivity || 0} µS/cm`;
           </Card>
 
           {/* Info Card */}
-          <Card className="mt-4 border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+          <Card className="mt-4 border-0 shadow-sm rounded-4">
             <Card.Body className="p-4">
-              <h5 className="fw-bold mb-3">ℹ️ তথ্য</h5>
-              <ul className="mb-0">
-                <li>এই ড্যাশবোর্ড ESP8266 থেকে Firebase Realtime Database এর মাধ্যমে লাইভ ডাটা দেখায়</li>
-                <li>সেন্সর ডাটা প্রতি ৫ সেকেন্ডে স্বয়ংক্রিয়ভাবে আপডেট হয়</li>
-                <li>সবুজ = অনুকূল মান, হলুদ = সতর্কতা, লাল = সমস্যা</li>
-                <li>"ফসল সুপারিশের জন্য ব্যবহার করুন" বোতামে ক্লিক করে সরাসরি ফসল সুপারিশ পেজে যান</li>
-                <li>ESP8266 WiFi নেটওয়ার্ক: <strong>npk_sensor</strong></li>
+              <h5 className="fw-bold mb-3 text-info">
+                <i className="bi bi-info-circle-fill me-2"></i>
+                তথ্য
+              </h5>
+              <ul className="mb-0 list-unstyled">
+                <li className="mb-2 d-flex align-items-start">
+                  <Badge bg="info" className="me-2 mt-1 rounded-circle" style={{width: '8px', height: '8px', padding: '4px'}}></Badge>
+                  <span>এই ড্যাশবোর্ড ESP8266 থেকে Firebase Realtime Database এর মাধ্যমে লাইভ ডাটা দেখায়</span>
+                </li>
+                <li className="mb-2 d-flex align-items-start">
+                  <Badge bg="info" className="me-2 mt-1 rounded-circle" style={{width: '8px', height: '8px', padding: '4px'}}></Badge>
+                  <span>সেন্সর ডাটা প্রতি ৫ সেকেন্ডে স্বয়ংক্রিয়ভাবে আপডেট হয়</span>
+                </li>
+                <li className="mb-2 d-flex align-items-start">
+                  <Badge bg="success" className="me-2 mt-1"></Badge>
+                  <span>সবুজ = অনুকূল মান</span>
+                  <Badge bg="warning" className="mx-2 mt-1"></Badge>
+                  <span>হলুদ = সতর্কতা</span>
+                  <Badge bg="danger" className="mx-2 mt-1"></Badge>
+                  <span>লাল = সমস্যা</span>
+                </li>
+                <li className="mb-2 d-flex align-items-start">
+                  <Badge bg="info" className="me-2 mt-1 rounded-circle" style={{width: '8px', height: '8px', padding: '4px'}}></Badge>
+                  <span>"ফসল সুপারিশের জন্য ব্যবহার করুন" বোতামে ক্লিক করে সরাসরি ফসল সুপারিশ পেজে যান</span>
+                </li>
+                <li className="d-flex align-items-start">
+                  <Badge bg="info" className="me-2 mt-1 rounded-circle" style={{width: '8px', height: '8px', padding: '4px'}}></Badge>
+                  <span>ESP8266 WiFi নেটওয়ার্ক: <Badge bg="dark" className="ms-1">npkSensor</Badge></span>
+                </li>
               </ul>
             </Card.Body>
           </Card>

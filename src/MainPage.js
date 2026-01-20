@@ -193,45 +193,54 @@ function MainPage() {
   };
 
   return (
-    <Container>
+    <Container className="py-5">
       <Row className="justify-content-center">
-        <Col lg={11} xl={10}>
-          <Card className="shadow-lg border-0" style={{ borderRadius: '25px', overflow: 'hidden' }}>
-            <div style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              padding: '2rem',
-              textAlign: 'center'
-            }}>
-              <h1 className="display-5 fw-bold text-white mb-2" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                🌾 ফসল সুপারিশ ব্যবস্থা
-              </h1>
-              <p className="text-white-50 mb-0">আপনার জমির জন্য সেরা ফসল খুঁজে নিন</p>
-              {isFromSensor && (
-                <Badge bg="light" text="dark" className="mt-3 px-4 py-2 fs-6">
-                  📡 সেন্সর ডাটা থেকে লোড করা হয়েছে
-                </Badge>
-              )}
-            </div>
-            
-            <Card.Body className="p-4 p-md-5">
+        <Col lg={10} xl={9}>
+          {/* Hero Header */}
+          <div className="text-center mb-5">
+            <h1 className="display-4 fw-bold text-dark mb-3">
+              <span className="text-success me-2">🌾</span>
+              ফসল সুপারিশ সিস্টেম
+            </h1>
+            <p className="lead text-muted mb-4">
+              AI-চালিত মাটি বিশ্লেষণ ও ফসল পরামর্শ
+            </p>
+            {isFromSensor && (
+              <Badge bg="success" className="px-4 py-2 rounded-pill fs-6">
+                <i className="bi bi-broadcast me-2"></i>
+                সেন্সর থেকে লোড করা হয়েছে
+              </Badge>
+            )}
+          </div>
+
+          {/* Main Card */}
+          <Card className="shadow-sm border-0 rounded-4 mb-4">
+            <Card.Body className="p-4 p-lg-5">
               {showAlert && (
                 <Alert 
                   variant={alertMessage.includes("সফল") ? "success" : "danger"} 
                   dismissible 
                   onClose={() => setShowAlert(false)}
-                  className="mb-4"
+                  className="mb-4 d-flex align-items-center rounded-3 shadow-sm"
                 >
-                  {alertMessage}
+                  <i className="bi bi-{alertMessage.includes('সফল') ? 'check-circle-fill' : 'exclamation-triangle-fill'} me-2 fs-5"></i>
+                  <span>{alertMessage}</span>
                 </Alert>
               )}
 
               <Form onSubmit={handleSubmit}>
-                <Row className="g-4">
+                <div className="mb-4">
+                  <h5 className="fw-bold text-dark mb-3">
+                    <i className="bi bi-clipboard-data text-primary me-2"></i>
+                    মাটির তথ্য প্রদান করুন
+                  </h5>
+                </div>
+                <Row className="g-3">
                   {Object.keys(formData).map((key) => (
                     <Col md={6} lg={4} key={key}>
-                      <Form.Group>
-                        <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-                          <span style={{ fontSize: '1.2rem' }}>
+                      <Form.Group className="mb-0">
+                        <Form.Label className="fw-semibold text-secondary small mb-2">
+                          <span className="me-2">
                             {key === 'N' && '🧪'}
                             {key === 'P' && '⚗️'}
                             {key === 'K' && '🔥'}
@@ -250,11 +259,11 @@ function MainPage() {
                           step="any"
                           required
                           placeholder={`${banglaLabels[key]} লিখুন`}
+                          className="border-2 py-2 px-3"
                           style={{
-                            borderRadius: '12px',
-                            padding: '0.875rem 1.25rem',
-                            border: '2px solid #e8ecef',
-                            fontSize: '1rem'
+                            borderRadius: '0.5rem',
+                            borderColor: '#e2e8f0',
+                            transition: 'all 0.2s'
                           }}
                         />
                       </Form.Group>
@@ -262,37 +271,48 @@ function MainPage() {
                   ))}
                 </Row>
                 
-                {/* Helpful Tips for Farmers */}
-                <Alert variant="success" className="mt-4" style={{ borderRadius: '15px', border: '2px solid #38ef7d' }}>
-                  <div className="d-flex align-items-start gap-3">
-                    <span style={{ fontSize: '2rem' }}>💡</span>
-                    <div>
-                      <h6 className="fw-bold mb-2">কৃষকদের জন্য টিপস:</h6>
-                      <ul className="mb-0" style={{ fontSize: '0.95rem' }}>
-                        <li><strong>সেন্সর ব্যবহার করুন:</strong> সঠিক মাটির তথ্যের জন্য NPK সেন্সর ব্যবহার করুন</li>
-                        <li><strong>নিয়মিত পরীক্ষা:</strong> প্রতি মৌসুমে মাটি পরীক্ষা করুন</li>
-                        <li><strong>তথ্য সংরক্ষণ:</strong> ফলাফল সংরক্ষণ করে পরবর্তীতে তুলনা করুন</li>
-                      </ul>
+                {/* Helpful Tips */}
+                <Card className="bg-light border-0 mt-4 mb-4">
+                  <Card.Body>
+                    <div className="d-flex align-items-start">
+                      <div className="text-success me-3 fs-2">
+                        <i className="bi bi-lightbulb-fill"></i>
+                      </div>
+                      <div className="flex-grow-1">
+                        <h6 className="fw-bold text-dark mb-3">সহায়ক পরামর্শ</h6>
+                        <div className="row g-3">
+                          <div className="col-md-4">
+                            <div className="d-flex align-items-center">
+                              <Badge bg="success" className="me-2 rounded-circle p-2" style={{width: '8px', height: '8px'}}></Badge>
+                              <small className="text-muted">NPK সেন্সর ব্যবহার করুন</small>
+                            </div>
+                          </div>
+                          <div className="col-md-4">
+                            <div className="d-flex align-items-center">
+                              <Badge bg="success" className="me-2 rounded-circle p-2" style={{width: '8px', height: '8px'}}></Badge>
+                              <small className="text-muted">নিয়মিত মাটি পরীক্ষা</small>
+                            </div>
+                          </div>
+                          <div className="col-md-4">
+                            <div className="d-flex align-items-center">
+                              <Badge bg="success" className="me-2 rounded-circle p-2" style={{width: '8px', height: '8px'}}></Badge>
+                              <small className="text-muted">তথ্য সংরক্ষণ করুন</small>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </Alert>
+                  </Card.Body>
+                </Card>
                 
-                <Row className="mt-4">
-                  <Col className="text-center">
-                    <Button 
-                      type="submit" 
-                      variant="success" 
-                      size="lg"
-                      disabled={loading}
-                      className="px-5 py-3"
-                      style={{
-                        borderRadius: '15px',
-                        fontWeight: '700',
-                        fontSize: '1.1rem',
-                        boxShadow: '0 8px 25px rgba(17, 153, 142, 0.3)',
-                        minWidth: '280px'
-                      }}
-                    >
+                <div className="text-center mt-4">
+                  <Button 
+                    type="submit" 
+                    variant="success"
+                    size="lg"
+                    disabled={loading}
+                    className="px-5 py-3 fw-bold rounded-pill shadow-sm"
+                  >
                       {loading ? (
                         <>
                           <Spinner
@@ -306,68 +326,65 @@ function MainPage() {
                           বিশ্লেষণ করা হচ্ছে...
                         </>
                       ) : (
-                        <>🌾 উপযুক্ত ফসল খুঁজুন</>
+                        <>
+                          <i className="bi bi-search me-2"></i>
+                          ফসল বিশ্লেষণ করুন
+                        </>
                       )}
                     </Button>
-                  </Col>
-                </Row>
-              </Form>
+                  </div>
+                </Form>
 
               {recommendations.length > 0 && (
-                <div className="mt-5 pt-4" style={{ borderTop: '2px solid #f0f0f0' }}>
-                  <Row className="mb-4">
-                    <Col className="text-center">
-                      <Button 
-                        onClick={handleSavePrediction} 
-                        variant="primary"
-                        size="lg"
-                        className="px-5 py-3"
-                        style={{
-                          borderRadius: '15px',
-                          fontWeight: '700',
-                          boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
-                        }}
-                      >
-                        💾 তথ্য সংরক্ষণ করুন
-                      </Button>
-                    </Col>
-                  </Row>
-
+                <div className="mt-5">
+                  <hr className="my-5" />
+                  
+                  {/* Save Button */}
                   <div className="text-center mb-4">
-                    <h2 className="fw-bold mb-2" style={{
-                      background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                      fontSize: '2rem'
-                    }}>
-                      🌱 আপনার জমির জন্য উপযুক্ত ফসল
+                    <Button 
+                      onClick={handleSavePrediction} 
+                      variant="primary"
+                      className="px-4 py-2 fw-semibold rounded-pill shadow-sm"
+                    >
+                      <i className="bi bi-save me-2"></i>
+                      ফলাফল সংরক্ষণ করুন
+                    </Button>
+                  </div>
+
+                  {/* Results Header */}
+                  <div className="text-center mb-4">
+                    <Badge bg="success" className="px-4 py-2 rounded-pill mb-3">
+                      <i className="bi bi-check-circle me-2"></i>
+                      বিশ্লেষণ সম্পন্ন
+                    </Badge>
+                    <h2 className="fw-bold text-dark mb-2">
+                      <i className="bi bi-award text-warning me-2"></i>
+                      সুপারিশকৃত ফসল
                     </h2>
-                    <p className="text-muted">মাটির গুণাগুণ অনুযায়ী সবচেয়ে ভালো ফসল</p>
-                    <p className="text-muted">আপনার জমির জন্য সবচেয়ে উপযুক্ত ফসল</p>
+                    <p className="text-muted">আপনার মাটির জন্য সর্বোচ্চ উপযুক্ত</p>
                   </div>
                   
                   <Row className="g-4">
                     {recommendations.map((item, index) => (
-                      <Col key={index} xs={12} sm={6} md={4} lg={3}>
-                        <Card className="h-100 border-0" style={{
-                          borderRadius: '20px',
-                          overflow: 'hidden',
-                          transition: 'all 0.3s ease',
-                          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.08)'
+                      <Col key={index} xs={12} sm={6} lg={4} xl={3}>
+                        <Card className="h-100 border-0 shadow-sm rounded-3 overflow-hidden" style={{
+                          transition: 'transform 0.2s, box-shadow 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-8px)';
+                          e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.15)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '';
                         }}>
-                          <div className="position-relative" style={{ overflow: 'hidden' }}>
+                          <div className="position-relative">
                             <Badge 
-                              bg={index === 0 ? "success" : index === 1 ? "info" : "primary"}
-                              className="position-absolute top-0 start-0 m-3 px-3 py-2"
-                              style={{
-                                fontSize: '0.9rem',
-                                zIndex: 10,
-                                borderRadius: '12px',
-                                boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
-                              }}
+                              bg={index === 0 ? "success" : index === 1 ? "primary" : "secondary"}
+                              className="position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill"
+                              style={{ zIndex: 10 }}
                             >
-                              #{index + 1} সুপারিশ
+                              #{index + 1}
                             </Badge>
                             {cropMap[item.crop] && (
                               <Card.Img 
@@ -376,45 +393,31 @@ function MainPage() {
                                 alt={item.crop}
                                 style={{ 
                                   height: "200px", 
-                                  objectFit: "cover",
-                                  transition: 'transform 0.3s ease'
+                                  objectFit: "cover"
                                 }}
-                                onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
-                                onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
                               />
                             )}
                           </div>
-                          <Card.Body className="text-center p-4">
-                            <Card.Title className="h4 fw-bold mb-3" style={{ color: '#2c3e50' }}>
+                          <Card.Body className="text-center p-3">
+                            <h5 className="fw-bold text-dark mb-3">
                               {cropMap[item.crop]?.name || item.crop}
-                            </Card.Title>
-                            <div className="d-flex flex-column gap-2">
-                              <Badge 
-                                bg="light" 
-                                text="dark" 
-                                className="py-2 px-3"
-                                style={{ 
-                                  fontSize: '1rem',
-                                  borderRadius: '12px',
-                                  border: '2px solid #e8ecef'
-                                }}
-                              >
-                                সঠিকতা: {Math.round(item.probability * 100)}%
-                              </Badge>
-                              <div style={{
-                                width: '100%',
-                                height: '8px',
-                                background: '#e8ecef',
-                                borderRadius: '10px',
-                                overflow: 'hidden'
-                              }}>
-                                <div style={{
-                                  width: `${item.probability * 100}%`,
-                                  height: '100%',
-                                  background: 'linear-gradient(90deg, #11998e 0%, #38ef7d 100%)',
-                                  borderRadius: '10px',
-                                  transition: 'width 1s ease'
-                                }}></div>
+                            </h5>
+                            <div className="mb-3">
+                              <div className="d-flex justify-content-between align-items-center mb-2">
+                                <small className="text-muted">সফলতার হার</small>
+                                <Badge bg="light" text="dark" className="fw-semibold">
+                                  {Math.round(item.probability * 100)}%
+                                </Badge>
+                              </div>
+                              <div className="progress" style={{ height: '10px' }}>
+                                <div 
+                                  className="progress-bar bg-success" 
+                                  role="progressbar" 
+                                  style={{ width: `${item.probability * 100}%` }}
+                                  aria-valuenow={item.probability * 100} 
+                                  aria-valuemin="0" 
+                                  aria-valuemax="100"
+                                ></div>
                               </div>
                             </div>
                           </Card.Body>

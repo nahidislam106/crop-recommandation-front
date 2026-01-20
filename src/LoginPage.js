@@ -72,7 +72,7 @@ function LoginPage() {
                 fontSize: '2.2rem',
                 letterSpacing: '1px'
               }}>
-                কৃষি সহায়ক সিস্টেম
+                কৃষি বিশ্লেষক সিস্টেম
               </h1>
               <div className="text-white mb-3" style={{ 
                 fontSize: '1rem',

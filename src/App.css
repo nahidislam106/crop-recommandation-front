@@ -1,5 +1,5 @@
 /* General styles */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
 
 * {
   margin: 0;
@@ -8,13 +8,13 @@
 }
 
 body {
-  font-family: 'Inter', 'Noto Sans Bengali', sans-serif;
-  background: linear-gradient(135deg, #6a994e 0%, #a7c957 100%);
+  font-family: 'Poppins', 'Noto Sans Bengali', sans-serif !important;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
   background-attachment: fixed;
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  color: #2d3319;
+  color: #2d3748;
 }
 
 /* Smooth scrolling */
@@ -22,47 +22,69 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Glassmorphism effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+/* Smooth animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
 /* Modern Navbar */
 .navbar {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  background: linear-gradient(135deg, #ff6b9d 0%, #c9184a 100%) !important;
-  backdrop-filter: blur(10px);
-  padding: 0.5rem 1.5rem;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  transition: all 0.3s ease;
+  background: #ffffff !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem 0 !important;
 }
 
 .navbar-brand {
   font-weight: 700 !important;
-  font-size: 1.3rem !important;
-  color: #6a994e !important;
+  font-size: 1.4rem !important;
+  color: #2d3748 !important;
   transition: all 0.3s ease;
 }
 
 .navbar-brand:hover {
-  transform: scale(1.05);
+  color: #4299e1 !important;
 }
 
 .navbar .nav-link {
-  color: #6a994e !important;
+  color: #4a5568 !important;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
   transition: all 0.3s ease;
-  position: relative;
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 1rem !important;
   border-radius: 8px;
+  margin: 0 0.25rem;
 }
 
 .navbar .nav-link:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  color: #ffffff !important;
+  background: #edf2f7;
+  color: #2d3748 !important;
 }
 
 .navbar .nav-link::after {
@@ -79,6 +101,59 @@ html {
 
 .navbar .nav-link:hover::after {
   width: 80%;
+}
+
+/* Dashboard Mega Menu Dropdown Styles */
+.dashboard-mega-menu .dropdown-menu {
+  min-width: 350px;
+  max-width: 400px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  padding: 1rem;
+  margin-top: 0.5rem;
+  /* Fix positioning - prevent overlay to right */
+  position: absolute !important;
+  left: auto !important;
+  right: 0 !important;
+  transform: none !important;
+}
+
+.mega-menu-container {
+  width: 100%;
+}
+
+.dashboard-mega-menu .dropdown-item {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-mega-menu .dropdown-item:hover {
+  background: rgba(72, 187, 120, 0.1);
+  transform: translateX(5px);
+}
+
+.dashboard-mega-menu .dropdown-header {
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+}
+
+.dashboard-mega-menu .dropdown-divider {
+  margin: 0.75rem 0;
+}
+
+/* Account Dropdown */
+#account-dropdown + .dropdown-menu {
+  min-width: 200px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  padding: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 /* Logout button */
