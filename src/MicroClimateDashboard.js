@@ -4,6 +4,7 @@ import { Container, Row, Col, Card, Button, Badge, Spinner } from "react-bootstr
 function MicroClimateDashboard() {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line no-unused-vars
   const [lastUpdate, setLastUpdate] = useState(null);
   const [location, setLocation] = useState(null);
   const [locationName, setLocationName] = useState(null);
@@ -211,6 +212,7 @@ function MicroClimateDashboard() {
     }, 500);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const formatTimestamp = (date) => {
     if (!date) return "N/A";
     return date.toLocaleTimeString('bn-BD', {

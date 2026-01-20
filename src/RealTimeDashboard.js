@@ -10,6 +10,7 @@ function RealTimeDashboard() {
   const [readings, setReadings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [lastUpdate, setLastUpdate] = useState(null);
   const navigate = useNavigate();
 
